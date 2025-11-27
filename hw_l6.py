@@ -1,6 +1,5 @@
 from datetime import date
 
-# 1. Создайте словарь email
 email5 = {
     "subject": "Project collaboration",
     "from": " partner@organization.org ",
@@ -8,14 +7,14 @@ email5 = {
     "body": "Hello,\nWe are interested in a partnership.\tPlease reply soon.\nRegards,\nTeam",
 }
 
+
 def normalize_addresses(addresses):
     """
     Возвращает значение, в котором адрес приведен к нижнему регистру и очищен от пробелов по краям.
     """
     text = addresses.strip().lower()
     return text
-print(("1 ") + normalize_addresses(email5["from"]))
-print(("1 ") + normalize_addresses(email5["to"]))
+
 
 def add_short_body(email):
     """
@@ -25,7 +24,7 @@ def add_short_body(email):
     email_body = email["body"]
     email_body = email_body[:10] + "..."
     return email_body
-print(("2 ") + add_short_body(email5))
+
 
 def clean_body_text(body):
     """
@@ -34,7 +33,7 @@ def clean_body_text(body):
     clean_body = email5["body"]
     clean_body = clean_body.replace("\n", " ").replace("\t", " ")
     return clean_body
-print(("3 ") + clean_body_text(email5))
+
 
 def build_sent_text(email: dict) -> str:
     """
@@ -48,9 +47,9 @@ def build_sent_text(email: dict) -> str:
     b = f"Тема: {(email['subject'])}, дата {date.today()}"
     c = clean_body_text(email5)
     return f"{a}\n{b}\n{c}"
-print(("4 ") + build_sent_text(email5))
 
-def check_empty_fields(subject: str, body:str) -> tuple[bool, bool]:
+
+def check_empty_fields(subject: str, body: str) -> tuple[bool, bool]:
     """
     Возвращает кортеж (is_subject_empty, is_body_empty).
     True, если поле пустое.
@@ -58,10 +57,70 @@ def check_empty_fields(subject: str, body:str) -> tuple[bool, bool]:
     is_subject_empty = not subject.strip()
     is_body_empty = not body.strip()
     return is_subject_empty, is_body_empty
-print(("5 ") + str(check_empty_fields(email5["subject"], email5["body"])))
+
 
 def mask_sender_email(login: str, domain: str) -> str:
     """
     Возвращает маску email: первые 2 символа логина + "***@" + домен.
     """
     return f"{login}[:2] + '***@' + {domain}"
+
+
+def get_correct_email(email_list: list[str]) -> list[str]:
+    """
+    Возвращает список корректных email.
+    """
+    correct_email = []
+    for email in email_list:
+        clean_email = email.strip().lower()
+        if "@" in clean_email and clean_email.endswith((".com", ".ru", ".net")):
+            correct_email.append(clean_email)
+    return correct_email
+
+
+test_emails = [
+    # Корректные адреса
+    "user@gmail.com",
+    "admin@company.ru",
+    "test_123@service.net",
+    "Example.User@domain.com",
+    "default@study.com",
+    " hello@corp.ru  ",
+    "user@site.NET",
+    "user@domain.coM",
+    "user.name@domain.ru",
+    "usergmail.com",
+    "user@domain",
+    "user@domain.org",
+    "@mail.ru",
+    "name@.com",
+    "name@domain.comm",
+    "",
+    "   ",
+]
+
+
+def create_email(sender: str, recipient: str, subject: str, body: str) -> dict:
+    """
+    Создает словарь email с базовыми полями:
+    'sender', 'recipient', 'subject', 'body'
+    """
+    return {"sender": sender, "recipient": recipient, "subject": subject, "body": body}
+
+
+def add_send_date(email: dict) -> dict:
+    """
+    Возвращает email с добавленным ключом email["date"] — текущая дата в формате YYYY-MM-DD.
+    """
+    email["date"] = date.today().isoformat()
+    return email
+
+
+def extract_login_domain(address: str) -> tuple[str, str]:
+    """
+    Возвращает логин и домен отправителя.
+    Пример: "user@mail.ru" -> ("user", "mail.ru")
+    """
+    address = address.strip()
+    login, domain = address.split("@")
+    return login, domain
