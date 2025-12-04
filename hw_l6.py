@@ -124,3 +124,57 @@ def extract_login_domain(address: str) -> tuple[str, str]:
     address = address.strip()
     login, domain = address.split("@")
     return login, domain
+
+
+def sender_email(
+    recipient_list: list[str], subject: str, message: str, *, sender="default@study.com"
+) -> list[dict]:
+    if not recipient_list:
+        return []
+
+    valid_sender_list = get_correct_email([sender])
+    if not valid_sender_list:
+        return []
+
+    valid_sender = valid_sender_list[0]
+    valid_recipients = get_correct_email(recipient_list)
+    if not valid_recipients:
+        return []
+
+    empty_subject, empty_body = check_empty_fields(subject, message)
+    if empty_subject or empty_body:
+        return []
+
+    for email in valid_recipients[:]:
+        if email == valid_sender:
+            valid_recipients.remove(email)
+
+    if not valid_recipients:
+        return []
+
+    normalized_body = clean_body_text(message)
+    normalized_subject = subject.strip()
+    normalized_sender = normalize_addresses(valid_sender)
+    normalized_recipients = [normalize_addresses(r) for r in valid_recipients]
+
+    results = []
+
+    for rcpt in normalized_recipients:
+        email = create_email(
+            sender=normalized_sender,
+            recipient=rcpt,
+            subject=normalized_subject,
+            body=normalized_body,
+        )
+
+        add_send_date(email)
+
+        login, domain = extract_login_domain(normalized_sender)
+        email["masked_sender"] = login[:2] + "***@" + domain
+
+        email["short_body"] = normalized_body[:10] + "..."
+        email["full_text"] = build_sent_text(email)
+
+        results.append(email)
+
+    return results
