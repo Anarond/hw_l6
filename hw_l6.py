@@ -34,9 +34,9 @@ def build_sent_text(email: dict) -> str:
     Тема: {subject}, дата {date}
     {clean_body}
     """
-    a = f"Кому: {normalize_addresses(email5['to'])}, от {normalize_addresses(email5['from'])}"
+    a = f"Кому: {email['recipient']}, от {email['masked_sender']}"
     b = f"Тема: {(email['subject'])}, дата {date.today()}"
-    c = clean_body_text(email5)
+    c = email['short_body']
     return f"{a}\n{b}\n{c}"
 
 
@@ -54,7 +54,7 @@ def mask_sender_email(login: str, domain: str) -> str:
     """
     Возвращает маску email: первые 2 символа логина + "***@" + домен.
     """
-    return f"{login}[:2] + '***@' + {domain}"
+    return login[:2] + "***@" + domain
 
 
 def get_correct_email(email_list: list[str]) -> list[str]:
@@ -139,9 +139,9 @@ def sender_email(
         add_send_date(email)
 
         login, domain = extract_login_domain(normalized_sender)
-        email["masked_sender"] = login[:2] + "***@" + domain
+        email["masked_sender"] = mask_sender_email(login, domain)
 
-        email["short_body"] = normalized_body[:10] + "..."
+        email["short_body"] = add_short_body(email)
         email["full_text"] = build_sent_text(email)
 
         results.append(email)
