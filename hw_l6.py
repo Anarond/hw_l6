@@ -23,9 +23,7 @@ def clean_body_text(body):
     """
     Заменяет табы и переводы строк на пробелы.
     """
-    clean_body = email5["body"]
-    clean_body = clean_body.replace("\n", " ").replace("\t", " ")
-    return clean_body
+    return body.replace("\n", " ").replace("\t", " ")
 
 
 def build_sent_text(email: dict) -> str:
