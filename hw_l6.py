@@ -1,12 +1,5 @@
 from datetime import date
 
-email5 = {
-    "subject": "Project collaboration",
-    "from": " partner@organization.org ",
-    "to": "  lead_dev@icloud.com ",
-    "body": "Hello,\nWe are interested in a partnership.\tPlease reply soon.\nRegards,\nTeam",
-}
-
 
 def normalize_addresses(addresses):
     """
@@ -76,28 +69,6 @@ def get_correct_email(email_list: list[str]) -> list[str]:
         if "@" in clean_email and clean_email.endswith((".com", ".ru", ".net")):
             correct_email.append(clean_email)
     return correct_email
-
-
-test_emails = [
-    # Корректные адреса
-    "user@gmail.com",
-    "admin@company.ru",
-    "test_123@service.net",
-    "Example.User@domain.com",
-    "default@study.com",
-    " hello@corp.ru  ",
-    "user@site.NET",
-    "user@domain.coM",
-    "user.name@domain.ru",
-    "usergmail.com",
-    "user@domain",
-    "user@domain.org",
-    "@mail.ru",
-    "name@.com",
-    "name@domain.comm",
-    "",
-    "   ",
-]
 
 
 def create_email(sender: str, recipient: str, subject: str, body: str) -> dict:
